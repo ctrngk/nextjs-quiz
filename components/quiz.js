@@ -1,85 +1,36 @@
-import React from 'react';
-import Progress from './progress';
-import Question from './question';
-import BackButton from './backButton';
-import QuizResults from './quizResults';
+import React, {useState} from 'react';
 
-class Quiz extends React.Component {
-    constructor() {
-        super();
+const Quiz = (dataProps) => {
+    const [answers, setAnswers] = useState([])
+    const [currentQuestion, setCurrentQuestion] = useState(1) // index
+    // const {data: {title, questions}} = dataProps
+    const questions = dataProps.data2.questions
+    const title = dataProps.data2.title
+    const data = dataProps.data2
+    const currentQuestionA = questions[currentQuestion-1]
 
-        this.handleAnswer = this.handleAnswer.bind(this);
-        this.handleBackButton = this.handleBackButton.bind(this);
-
-        this.state = {
-            answers: [],
-            currentQuestion: 1
-        };
-    }
-
-    handleAnswer(answerId) {
-        this.setState({
-            answers: [...this.state.answers, answerId],
-            currentQuestion: this.state.currentQuestion + 1
-        });
-    }
-
-    handleBackButton() {
-        this.setState({
-            currentQuestion: this.state.currentQuestion - 1
-        });
-    }
-
-    renderQuiz(currentQuestionIndex, totalQuestions) {
-        const {data: {questions}, data} = this.props;
-        const currentQuestion = questions[currentQuestionIndex - 1];
-        const subtitle = currentQuestion.subtitle
-            ? currentQuestion.subtitle
-            : data.subtitle ? data.subtitle : '';
-
-        return(
-            <div>
-                <Progress
-                    current={currentQuestionIndex}
-                    total={totalQuestions}
-                />
-                <Question
-                    question={currentQuestion}
-                    subtitle={subtitle}
-                    onAnswer={this.handleAnswer}
-                />
-            </div>
-        );
-    }
-
-    renderQuizResults() {
-        return(
-            <QuizResults data={this.props.data} answers={this.state.answers}/>
-        );
-    }
-
-    render() {
-        const {data: {title, questions}} = this.props;
-        const totalQuestions = questions.length;
-        const currentQuestionIndex = this.state.currentQuestion;
-        const currentQuestion = questions[currentQuestionIndex - 1];
-
-        const renderComponent = (currentQuestionIndex > totalQuestions)
-            ? this.renderQuizResults()
-            : this.renderQuiz(currentQuestionIndex, totalQuestions);
-
-        const renderBackButton = (currentQuestionIndex > 1)
-            ? <BackButton handleClick={this.handleBackButton} />
-            : '';
-
-        return (
-            <div id="quiz">
-                <h2 id="quiz-title" className="f2 tc">{title}</h2>
-                {renderComponent}
-                {renderBackButton}
-            </div>
-        );
-    }
+    return <div>
+        <h2>{title}</h2>
+        {
+            (currentQuestion > questions.length)
+                ? <div> <div> result {JSON.stringify(data)} </div> <div> {JSON.stringify(answers)}</div></div>
+                : <div>
+                    <h3>{currentQuestionA.title}</h3>
+                    <h4>{currentQuestionA.subtitle ? currentQuestionA.subtitle : data.subtitle ? data.subtitle : ''}</h4>
+                    <div>
+                        {currentQuestionA.answers.map((answer, index) =>
+                            <div onClick={
+                                () => {
+                                    setAnswers([...answers, index])
+                                    setCurrentQuestion(currentQuestion+1)
+                                }
+                            }><p>{answer}</p></div>
+                        )}
+                    </div>
+                </div>
+        }
+    </div>
 }
 
-export default Quiz;
+export default Quiz
+

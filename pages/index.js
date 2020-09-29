@@ -2,18 +2,17 @@ import Page from '../components/page.js';
 import Quiz from '../components/quiz.js';
 import exampleQuestions from '../data/exampleQuestions';
 
-export default class extends React.Component {
-
-    static async getInitialProps () {
-        // TODO: Assume it'll be asynchronous from a data source
-        return exampleQuestions;
+export async function getServerSideProps() {
+    // TODO: Assume it'll be asynchronous from a data source
+    const data = await exampleQuestions;
+    // Pass data to the page via props
+    return {
+        props: data
     }
+}
 
-    render () {
-        return(
-            <Page>
-               <Quiz data={this.props} />
-            </Page>
-        );
-    }
-};
+function HomePage(data) {
+    return <Page> <Quiz data2={data} /></Page>
+}
+
+export default HomePage
